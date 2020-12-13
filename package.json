@@ -1,0 +1,20 @@
+{
+  "name": "mars-dashboard",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "git@github.com:solfincode/javascript-2-mars-dashbord.git",
+  "author": "Q",
+  "license": "MIT",
+  "scripts":{
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/server/app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "immutable": "^4.0.0-rc.12",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.6"
+  }
+}
