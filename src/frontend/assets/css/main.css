@@ -7,19 +7,12 @@ body {
   flex-direction: column;
   font-family: Arial;
   min-height: 100vh;
-}
-
-header {
-  /* header styles */
+  line-height: 1.6em;
 }
 
 main {
   flex: 1;
   padding: 20px;
-}
-
-footer {
-  /* footer styles */
 }
 
 /* -------------------  TABLET  --------------------- */

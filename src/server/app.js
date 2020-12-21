@@ -26,4 +26,17 @@ app.get("/apod", async (req, res) => {
   }
 });
 
+//rover api for rovers
+app.get("/rovers/:id", async (req, res) => {
+  try {
+    let name = req.params.id;
+    let data = await fetch(
+      `https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/photos?sol=1000&camera=fhaz&api_key=${process.env.API_KEY}`
+    ).then((res) => res.json());
+    res.send({ data });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.listen(PORT, () => console.log(`server is listening at ${PORT}`));

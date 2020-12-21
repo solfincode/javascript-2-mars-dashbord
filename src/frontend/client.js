@@ -4,6 +4,7 @@ let store = Immutable.Map({
   }),
   apod: "",
   rovers: Immutable.List(["Curiosity", "Opportunity", "Spirit"]),
+  roverData: "",
 });
 
 // add our markup to the page
@@ -22,14 +23,13 @@ const render = async (root, state) => {
 const App = (state) => {
   let user = state.get("user");
   let apod = state.get("apod");
-  let rovers = state.get("rovers");
+  let roverData = state.get("roverData");
   return `
         <header></header>
         <main>
             ${Greeting(user.get("name"))}
             <section>
-                <h3>Put things on the page!</h3>
-                <p>Here is an example section.</p>
+                <h3>NASA Mars Dashboard</h3>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
                     the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
@@ -39,6 +39,7 @@ const App = (state) => {
                     but generally help with discoverability of relevant imagery.
                 </p>
                 ${ImageOfTheDay(apod)}
+                ${roverImage(roverData)}
             </section>
         </main>
         <footer></footer>
@@ -75,9 +76,7 @@ const ImageOfTheDay = (apod) => {
   console.log(photodate.getDate() === today.getDate());
   if (!apod || apod.date === today.getDate()) {
     getImageOfTheDay(store);
-    getRoversImage(store);
   }
-
   // check if the photo of the day is actually type video!
   if (apod.media_type === "video") {
     return `
@@ -91,20 +90,35 @@ const ImageOfTheDay = (apod) => {
     return `
             <img src="${apod
               .get("image")
-              .get("url")}" height="350px" width="100%" />
+              .get("url")}" height="450px" width="100%" />
             <p>${apod.get("image").get("explanation")}</p>
         `;
   }
 };
 
+//rover image data
+
+const roverImage = (roverData) => {
+  getRoverImage(store);
+  //get roverData and display here
+};
 // ------------------------------------------------------  API CALLS
 
 // Example API call
 const getImageOfTheDay = (state) => {
-  let { apod } = state;
+  // let { apod } = state;
   fetch(`http://localhost:3000/apod`)
     .then((res) => res.json())
     .then((apod) => {
       updateStore(store, { apod });
+    });
+};
+
+const getRoverImage = (state) => {
+  // let { roverData } = state.get("roverData");
+  fetch(`http://localhost:3000/rovers/curiosity`)
+    .then((res) => res.json())
+    .then((roverData) => {
+      updateStore(store, { roverData });
     });
 };
