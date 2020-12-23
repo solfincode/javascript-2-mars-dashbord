@@ -7,23 +7,84 @@ let store = Immutable.Map({
   roverData: "",
 });
 
-// add our markup to the page
-const root = document.getElementById("root");
-
 const updateStore = (store, newState) => {
   newStore = store.merge(newState);
   render(root, newStore);
 };
 
+//api call
+const getImageOfTheDay = (store) => {
+  fetch(`http://localhost:3000/apod`)
+    .then((res) => res.json())
+    .then((apod) => {
+      updateStore(store, { apod });
+    })
+    .catch((err) => console.log(err));
+};
+const getRoverImage = (store) => {
+  fetch(`http://localhost:3000/rovers/curiosity`)
+    .then((res) => res.json())
+    .then((roverData) => {
+      updateStore(store, { roverData });
+    })
+    .catch((err) => console.log(err));
+};
+// add our markup to the page
+const root = document.getElementById("root");
+
 const render = async (root, state) => {
   root.innerHTML = App(state);
 };
 
+// api call init
+getImageOfTheDay(store);
+getRoverImage(store);
+
+// ------------------------------------------------------  COMPONENTS
+
+//greeting component
+const Greeting = (name) => {
+  if (name) {
+    return `
+            <h1>Welcome, ${name}!</h1>
+        `;
+  }
+
+  return `
+        <h1>Hello!</h1>
+    `;
+};
+
+//apod image component
+const ImageOfTheDay = (store) => {
+  const apod = store.get("apod");
+  console.log("apod", apod);
+  if (apod.media_type === "video") {
+    return `
+          <p>See today's featured video <a href="${apod.get(
+            "url"
+          )}">here</a></p>
+          <p>${apod.get("title")}</p>
+          <p>${apod.get("explanation")}</p>
+      `;
+  } else {
+    return `
+          <img src="${apod
+            .get("image")
+            .get("url")}" height="450px" width="100%" />
+          <p>${apod.get("image").get("explanation")}</p>
+      `;
+  }
+};
+
+//image of rover
+const ImageOfRover = (store) => {
+  const roverData = store.get("roverData");
+  console.log("rover", roverData);
+};
 // create content
-const App = (state) => {
-  let user = state.get("user");
-  let apod = state.get("apod");
-  let roverData = state.get("roverData");
+const App = (store) => {
+  let user = store.get("user");
   return `
         <header></header>
         <main>
@@ -38,8 +99,8 @@ const App = (state) => {
                     explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
                     but generally help with discoverability of relevant imagery.
                 </p>
-                ${ImageOfTheDay(apod)}
-                ${roverImage(roverData)}
+                ${ImageOfTheDay(store)}
+                ${ImageOfRover(store)}
             </section>
         </main>
         <footer></footer>
@@ -50,75 +111,3 @@ const App = (state) => {
 window.addEventListener("load", () => {
   render(root, store);
 });
-
-// ------------------------------------------------------  COMPONENTS
-
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-  if (name) {
-    return `
-            <h1>Welcome, ${name}!</h1>
-        `;
-  }
-
-  return `
-        <h1>Hello!</h1>
-    `;
-};
-
-// Example of a pure function that renders infomation requested from the backend
-const ImageOfTheDay = (apod) => {
-  // If image does not already exist, or it is not from today -- request it again
-  const today = new Date();
-  const photodate = new Date(apod.date);
-  console.log(photodate.getDate(), today.getDate());
-
-  console.log(photodate.getDate() === today.getDate());
-  if (!apod || apod.date === today.getDate()) {
-    getImageOfTheDay(store);
-  }
-  // check if the photo of the day is actually type video!
-  if (apod.media_type === "video") {
-    return `
-            <p>See today's featured video <a href="${apod.get(
-              "url"
-            )}">here</a></p>
-            <p>${apod.get("title")}</p>
-            <p>${apod.get("explanation")}</p>
-        `;
-  } else {
-    return `
-            <img src="${apod
-              .get("image")
-              .get("url")}" height="450px" width="100%" />
-            <p>${apod.get("image").get("explanation")}</p>
-        `;
-  }
-};
-
-//rover image data
-
-const roverImage = (roverData) => {
-  getRoverImage(store);
-  //get roverData and display here
-};
-// ------------------------------------------------------  API CALLS
-
-// Example API call
-const getImageOfTheDay = (state) => {
-  // let { apod } = state;
-  fetch(`http://localhost:3000/apod`)
-    .then((res) => res.json())
-    .then((apod) => {
-      updateStore(store, { apod });
-    });
-};
-
-const getRoverImage = (state) => {
-  // let { roverData } = state.get("roverData");
-  fetch(`http://localhost:3000/rovers/curiosity`)
-    .then((res) => res.json())
-    .then((roverData) => {
-      updateStore(store, { roverData });
-    });
-};
