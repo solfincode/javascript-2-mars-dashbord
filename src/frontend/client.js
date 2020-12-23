@@ -12,7 +12,6 @@ const updateStore = (store, newState) => {
   render(app, newStore);
 };
 
-//api call
 //apod api
 const getImageOfTheDay = (store) => {
   fetch(`http://localhost:3000/apod`)
@@ -29,6 +28,7 @@ const getRoverImage = (store) => {
     .then((res) => res.json())
     .then((roverData) => {
       updateStore(store, { roverData });
+      console.log("clicked");
     })
     .catch((err) => console.log(err));
 };
@@ -45,11 +45,18 @@ const render = async (app, state) => {
 // api call init
 getImageOfTheDay(store);
 
-curiosityBtn.addEventListener("click", getRoverImage(store));
-opportunityBtn.addEventListener("click", getRoverImage(store));
-spiritBtn.addEventListener("click", getRoverImage(store));
+//rover eventlistener
+curiosityBtn.addEventListener("click", function () {
+  getRoverImage(store);
+});
+opportunityBtn.addEventListener("click", function () {
+  getRoverImage(store);
+});
+spiritBtn.addEventListener("click", function () {
+  getRoverImage(store);
+});
 
-// ------------------------------------------------------  COMPONENTS
+// ----------------COMPONENTS----------------------------
 
 //greeting component
 const Greeting = (name) => {
@@ -108,8 +115,10 @@ const ImageOfTheDay = (store) => {
 
 //image of rover
 const ImageOfRover = (store) => {
-  const roverData = store.get("roverData");
-  console.log("roverData", roverData);
+  console.log("store", store);
+  // return `
+  // <img src="${roverData.data.photos.img_src}" height="450px" width="100%" />
+  // `;
 };
 
 // listening for load event because page should load before any JS is called
