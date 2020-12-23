@@ -12,9 +12,19 @@ body {
 
 main {
   flex: 1;
-  padding: 20px;
 }
 
+.container {
+  margin: 50px;
+}
+
+#button {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
   /* use mobile */

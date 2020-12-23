@@ -9,10 +9,11 @@ let store = Immutable.Map({
 
 const updateStore = (store, newState) => {
   newStore = store.merge(newState);
-  render(root, newStore);
+  render(app, newStore);
 };
 
 //api call
+//apod api
 const getImageOfTheDay = (store) => {
   fetch(`http://localhost:3000/apod`)
     .then((res) => res.json())
@@ -21,6 +22,8 @@ const getImageOfTheDay = (store) => {
     })
     .catch((err) => console.log(err));
 };
+
+//rover api
 const getRoverImage = (store) => {
   fetch(`http://localhost:3000/rovers/curiosity`)
     .then((res) => res.json())
@@ -29,16 +32,22 @@ const getRoverImage = (store) => {
     })
     .catch((err) => console.log(err));
 };
-// add our markup to the page
-const root = document.getElementById("root");
+// dom elements
+const app = document.getElementById("app");
+const curiosityBtn = document.getElementById("curiosity");
+const opportunityBtn = document.getElementById("opportunity");
+const spiritBtn = document.getElementById("spirit");
 
-const render = async (root, state) => {
-  root.innerHTML = App(state);
+const render = async (app, state) => {
+  app.innerHTML = App(state);
 };
 
 // api call init
 getImageOfTheDay(store);
-getRoverImage(store);
+
+curiosityBtn.addEventListener("click", getRoverImage(store));
+opportunityBtn.addEventListener("click", getRoverImage(store));
+spiritBtn.addEventListener("click", getRoverImage(store));
 
 // ------------------------------------------------------  COMPONENTS
 
@@ -55,10 +64,32 @@ const Greeting = (name) => {
     `;
 };
 
+// create content
+const App = (store) => {
+  let user = store.get("user");
+  return `
+        <main>
+            ${Greeting(user.get("name"))}
+        </main>
+        <section>
+          <h3>NASA Mars Dashboard</h3>
+            <p>
+            One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
+            the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
+            This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
+            applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
+            explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
+            but generally help with discoverability of relevant imagery.      
+            </p>
+        </section>
+        <div id="apod">${ImageOfTheDay(store)}</div>
+        <div id="rover">${ImageOfRover(store)}</div>
+    `;
+};
+
 //apod image component
 const ImageOfTheDay = (store) => {
   const apod = store.get("apod");
-  console.log("apod", apod);
   if (apod.media_type === "video") {
     return `
           <p>See today's featured video <a href="${apod.get(
@@ -69,10 +100,8 @@ const ImageOfTheDay = (store) => {
       `;
   } else {
     return `
-          <img src="${apod
-            .get("image")
-            .get("url")}" height="450px" width="100%" />
-          <p>${apod.get("image").get("explanation")}</p>
+    <img src="${apod.get("image").get("url")}" height="450px" width="100%" />
+    <p>${apod.get("image").get("explanation")}</p>
       `;
   }
 };
@@ -80,34 +109,10 @@ const ImageOfTheDay = (store) => {
 //image of rover
 const ImageOfRover = (store) => {
   const roverData = store.get("roverData");
-  console.log("rover", roverData);
-};
-// create content
-const App = (store) => {
-  let user = store.get("user");
-  return `
-        <header></header>
-        <main>
-            ${Greeting(user.get("name"))}
-            <section>
-                <h3>NASA Mars Dashboard</h3>
-                <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
-                </p>
-                ${ImageOfTheDay(store)}
-                ${ImageOfRover(store)}
-            </section>
-        </main>
-        <footer></footer>
-    `;
+  console.log("roverData", roverData);
 };
 
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
-  render(root, store);
+  render(app, store);
 });
