@@ -15,11 +15,21 @@ main {
 }
 
 .container {
-  margin: 50px;
+  margin: 50px auto;
+  width: 500px;
 }
-
-#button {
+section {
+  margin-bottom: 50px;
+}
+button {
+  cursor: pointer;
   width: 100%;
+  padding: 10px 20px;
+  background-color: rgb(255, 123, 0);
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: none;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

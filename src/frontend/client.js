@@ -2,14 +2,14 @@ let store = Immutable.Map({
   user: Immutable.Map({
     name: "David",
   }),
-  apod: "",
+  apod: Immutable.Map({ image: "" }),
   rovers: Immutable.List(["Curiosity", "Opportunity", "Spirit"]),
-  roverData: "",
+  roverData: Immutable.Map({ data: "" }),
 });
 
 const updateStore = (store, newState) => {
-  newStore = store.mergeDeep(newState);
-  render(app, newStore);
+  store = store.merge(newState);
+  render(app, store);
 };
 
 //apod api
@@ -86,6 +86,7 @@ const Greeting = (name) => {
 // create content
 const App = (store) => {
   let user = store.toJS();
+
   console.log("app", store);
   return `
         <main>
@@ -109,28 +110,32 @@ const App = (store) => {
 
 //apod image component
 const ImageOfTheDay = (store) => {
-  const apod = store.get("apod");
+  // const apod = store.get("apod");
+  const apod = store.toJS().apod;
+  console.log("apod", apod.image.url);
+
   if (apod.media_type === "video") {
     return `
           <p>See today's featured video <a href="${apod.get(
             "url"
           )}">here</a></p>
-          <p>${apod.get("title")}</p>
-          <p>${apod.get("explanation")}</p>
+          <p>${apod.title}</p>
+          <p>${apod.explanation}</p>
       `;
   } else {
     return `
-    <img src="${apod.get("image").get("url")}" height="450px" width="100%" />
-    <p>${apod.get("image").get("explanation")}</p>
+    <img src="${apod.image.url}" width="100%" />
+    <p>${apod.image.explanation}</p>
       `;
   }
 };
 
 //image of rover
 const ImageOfRover = (store) => {
-  const roverData = store.get("roverData");
+  const roverData = store.toJS().roverData.data.photos;
+  // const roverData = store.get("roverData").get("data").get("photos");
   console.log("inrover", roverData);
-  if (roverData.length === 0 || roverData === undefined) {
+  if (roverData === undefined || roverData === "") {
     return ``;
   } else {
     return `${roverData.map((el) => roverImageEl(el))}`;
@@ -140,7 +145,7 @@ const ImageOfRover = (store) => {
 const roverImageEl = (el) => {
   return `
           <div class="image-element">
-            <img src="${el.img_src}" height="450px" width="100%" />
+            <img src="${el.img_src}" width="100%" />
           </div>
   `;
 };
@@ -148,5 +153,5 @@ const roverImageEl = (el) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
   getImageOfTheDay(store);
-  render(app, store);
+  // render(app, store);
 });
