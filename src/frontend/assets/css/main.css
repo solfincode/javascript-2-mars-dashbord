@@ -25,6 +25,13 @@ main {
   align-items: center;
   justify-content: center;
 }
+
+#rover {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  column-gap: 10px;
+  justify-content: center;
+}
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
   /* use mobile */

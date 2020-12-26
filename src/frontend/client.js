@@ -8,7 +8,7 @@ let store = Immutable.Map({
 });
 
 const updateStore = (store, newState) => {
-  newStore = store.merge(newState);
+  newStore = store.mergeDeep(newState);
   render(app, newStore);
 };
 
@@ -23,39 +23,51 @@ const getImageOfTheDay = (store) => {
 };
 
 //rover api
-const getRoverImage = (store) => {
+const getCuriosity = (store) => {
   fetch(`http://localhost:3000/rovers/curiosity`)
     .then((res) => res.json())
     .then((roverData) => {
       updateStore(store, { roverData });
-      console.log("clicked");
+    })
+    .catch((err) => console.log(err));
+};
+const getOpportunity = (store) => {
+  fetch(`http://localhost:3000/rovers/opportunity`)
+    .then((res) => res.json())
+    .then((roverData) => {
+      updateStore(store, { roverData });
+    })
+    .catch((err) => console.log(err));
+};
+
+const getSpirit = (store) => {
+  fetch(`http://localhost:3000/rovers/spirit`)
+    .then((res) => res.json())
+    .then((roverData) => {
+      updateStore(store, { roverData });
     })
     .catch((err) => console.log(err));
 };
 // dom elements
 const app = document.getElementById("app");
-const curiosityBtn = document.getElementById("curiosity");
-const opportunityBtn = document.getElementById("opportunity");
-const spiritBtn = document.getElementById("spirit");
 
 const render = async (app, state) => {
   app.innerHTML = App(state);
 };
 
-// api call init
-getImageOfTheDay(store);
-
 //rover eventlistener
+const curiosityBtn = document.getElementById("curiosity");
+const opportunityBtn = document.getElementById("opportunity");
+const spiritBtn = document.getElementById("spirit");
 curiosityBtn.addEventListener("click", function () {
-  getRoverImage(store);
+  getCuriosity(store);
 });
 opportunityBtn.addEventListener("click", function () {
-  getRoverImage(store);
+  getOpportunity(store);
 });
 spiritBtn.addEventListener("click", function () {
-  getRoverImage(store);
+  getSpirit(store);
 });
-
 // ----------------COMPONENTS----------------------------
 
 //greeting component
@@ -73,10 +85,11 @@ const Greeting = (name) => {
 
 // create content
 const App = (store) => {
-  let user = store.get("user");
+  let user = store.toJS();
+  console.log("app", store);
   return `
         <main>
-            ${Greeting(user.get("name"))}
+            ${Greeting(user.user.name)}
         </main>
         <section>
           <h3>NASA Mars Dashboard</h3>
@@ -88,7 +101,7 @@ const App = (store) => {
             explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
             but generally help with discoverability of relevant imagery.      
             </p>
-        </section>
+        </section>  
         <div id="apod">${ImageOfTheDay(store)}</div>
         <div id="rover">${ImageOfRover(store)}</div>
     `;
@@ -115,13 +128,25 @@ const ImageOfTheDay = (store) => {
 
 //image of rover
 const ImageOfRover = (store) => {
-  console.log("store", store);
-  // return `
-  // <img src="${roverData.data.photos.img_src}" height="450px" width="100%" />
-  // `;
+  const roverData = store.get("roverData");
+  console.log("inrover", roverData);
+  if (roverData.length === 0 || roverData === undefined) {
+    return ``;
+  } else {
+    return `${roverData.map((el) => roverImageEl(el))}`;
+  }
+};
+
+const roverImageEl = (el) => {
+  return `
+          <div class="image-element">
+            <img src="${el.img_src}" height="450px" width="100%" />
+          </div>
+  `;
 };
 
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
+  getImageOfTheDay(store);
   render(app, store);
 });
