@@ -8,7 +8,8 @@ let store = Immutable.Map({
 });
 
 const updateStore = (store, newState) => {
-  store = store.merge(newState);
+  newStore = store.merge(newState);
+  Object.assign(store, newStore);
   render(app, store);
 };
 
@@ -61,12 +62,15 @@ const opportunityBtn = document.getElementById("opportunity");
 const spiritBtn = document.getElementById("spirit");
 curiosityBtn.addEventListener("click", function () {
   getCuriosity(store);
+  window.scrollTo({ top: 1500, behavior: "smooth" });
 });
 opportunityBtn.addEventListener("click", function () {
   getOpportunity(store);
+  window.scrollTo({ top: 1500, behavior: "smooth" });
 });
 spiritBtn.addEventListener("click", function () {
   getSpirit(store);
+  window.scrollTo({ top: 1500, behavior: "smooth" });
 });
 // ----------------COMPONENTS----------------------------
 
@@ -86,8 +90,6 @@ const Greeting = (name) => {
 // create content
 const App = (store) => {
   let user = store.toJS();
-
-  console.log("app", store);
   return `
         <main>
             ${Greeting(user.user.name)}
@@ -104,15 +106,14 @@ const App = (store) => {
             </p>
         </section>  
         <div id="apod">${ImageOfTheDay(store)}</div>
+        <h2>Rover Images</h2>
         <div id="rover">${ImageOfRover(store)}</div>
     `;
 };
 
 //apod image component
 const ImageOfTheDay = (store) => {
-  // const apod = store.get("apod");
   const apod = store.toJS().apod;
-  console.log("apod", apod.image.url);
 
   if (apod.media_type === "video") {
     return `
@@ -124,17 +125,21 @@ const ImageOfTheDay = (store) => {
       `;
   } else {
     return `
-    <img src="${apod.image.url}" width="100%" />
-    <p>${apod.image.explanation}</p>
+    ${apodImageEl(apod)}
       `;
   }
+};
+
+const apodImageEl = (apod) => {
+  return ` 
+  <img src="${apod.image.url}" width="100%" />
+  <p>${apod.image.explanation}</p>
+  `;
 };
 
 //image of rover
 const ImageOfRover = (store) => {
   const roverData = store.toJS().roverData.data.photos;
-  // const roverData = store.get("roverData").get("data").get("photos");
-  console.log("inrover", roverData);
   if (roverData === undefined || roverData === "") {
     return ``;
   } else {
@@ -156,5 +161,4 @@ const roverImageEl = (el) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
   getImageOfTheDay(store);
-  // render(app, store);
 });
