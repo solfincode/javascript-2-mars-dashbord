@@ -3,11 +3,16 @@
 
 /* -------------------  MOBILE  --------------------- */
 body {
+  color: white;
   display: flex;
   flex-direction: column;
   font-family: Arial;
   min-height: 100vh;
-  line-height: 1.6em;
+  line-height: 1.4em;
+  background: url("https://www.nasa.gov/sites/default/files/styles/full_width/public/thumbnails/image/50613902418_13a3bb9d78_o.jpg?itok=EIm3O7fp");
+  background-color: black;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 main {
@@ -23,7 +28,7 @@ section {
 }
 button {
   cursor: pointer;
-  width: 100%;
+  /* width: 100%; */
   padding: 10px 20px;
   background-color: rgb(255, 123, 0);
   color: white;
@@ -35,26 +40,36 @@ button {
   align-items: center;
   justify-content: center;
 }
-
 #rover {
   display: grid;
-  grid-template-columns: 33% 33% 33%;
   column-gap: 10px;
   justify-content: center;
 }
+
 /* -------------------  TABLET  --------------------- */
+@media (min-width: 368px) {
+  /* use mobile */
+  .container {
+    width: 350px;
+  }
+  button {
+    width: 350px;
+  }
+  #rover {
+    grid-template-columns: 100%;
+    justify-content: center;
+  }
+}
+
 @media (min-width: 768px) {
   /* use mobile */
-}
-
-/* -------------------  DESKTOP  -------------------- */
-
-@media (min-width: 1224px) {
-  /* use mobile */
-}
-
-/* -------------------  LARGE SCREENS  -------------- */
-
-@media (min-width: 1824px) {
-  /* use mobile */
+  .container {
+    width: 700px;
+  }
+  button {
+    width: 700px;
+  }
+  #rover {
+    grid-template-columns: 33% 33% 33%;
+  }
 }

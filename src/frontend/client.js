@@ -146,6 +146,9 @@ const roverImageEl = (el) => {
   return `
           <div class="image-element">
             <img src="${el.img_src}" width="100%" />
+            <p><b>landing date:</b> ${el.rover.landing_date}</p>
+            <p><b>launch date: </b>${el.rover.launch_date}</p>
+            <p><b>status:</b> ${el.rover.status}</p>
           </div>
   `;
 };
