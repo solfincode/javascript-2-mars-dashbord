@@ -3,7 +3,7 @@ let store = Immutable.Map({
     name: "David",
   }),
   apod: Immutable.Map({ image: "" }),
-  rovers: Immutable.List(["Curiosity", "Opportunity", "Spirit"]),
+  rovers: Immutable.List(["curiosity", "opportunity", "spirit"]),
   roverData: Immutable.Map({ data: "" }),
 });
 
@@ -24,16 +24,8 @@ const getImageOfTheDay = (store) => {
 };
 
 //rover api
-const getCuriosity = (store) => {
-  fetch(`http://localhost:3000/rovers/curiosity`)
-    .then((res) => res.json())
-    .then((roverData) => {
-      updateStore(store, { roverData });
-    })
-    .catch((err) => console.log(err));
-};
-const getOpportunity = (store) => {
-  fetch(`http://localhost:3000/rovers/opportunity`)
+const getRoverImage = (store, name) => {
+  fetch(`http://localhost:3000/rovers/${name.textContent.toLowerCase()}`)
     .then((res) => res.json())
     .then((roverData) => {
       updateStore(store, { roverData });
@@ -41,14 +33,6 @@ const getOpportunity = (store) => {
     .catch((err) => console.log(err));
 };
 
-const getSpirit = (store) => {
-  fetch(`http://localhost:3000/rovers/spirit`)
-    .then((res) => res.json())
-    .then((roverData) => {
-      updateStore(store, { roverData });
-    })
-    .catch((err) => console.log(err));
-};
 // dom elements
 const app = document.getElementById("app");
 
@@ -60,16 +44,17 @@ const render = async (app, state) => {
 const curiosityBtn = document.getElementById("curiosity");
 const opportunityBtn = document.getElementById("opportunity");
 const spiritBtn = document.getElementById("spirit");
+
 curiosityBtn.addEventListener("click", function () {
-  getCuriosity(store);
+  getRoverImage(store, curiosity);
   window.scrollTo({ top: 1500, behavior: "smooth" });
 });
 opportunityBtn.addEventListener("click", function () {
-  getOpportunity(store);
+  getRoverImage(store, opportunity);
   window.scrollTo({ top: 1500, behavior: "smooth" });
 });
 spiritBtn.addEventListener("click", function () {
-  getSpirit(store);
+  getRoverImage(store, spirit);
   window.scrollTo({ top: 1500, behavior: "smooth" });
 });
 // ----------------COMPONENTS----------------------------
@@ -107,6 +92,7 @@ const App = (store) => {
         </section>  
         <div id="apod">${ImageOfTheDay(store)}</div>
         <h2>Rover Images</h2>
+        <div id="board">${dashboard(store)}</div>
         <div id="rover">${ImageOfRover(store)}</div>
     `;
 };
@@ -147,13 +133,41 @@ const ImageOfRover = (store) => {
   }
 };
 
+const dashboard = (store) => {
+  const roverData = store.toJS().roverData.data.photos;
+  if (roverData === undefined || roverData === "") {
+    return `
+    <div><b>landing date: </b></div>
+    <div><b>launch date: </b></div>
+    <div><b>earth-date: </b> </div>
+    <div><b>status: </b> </div>
+    `;
+  } else {
+    const data = {};
+    roverData.map((el) => {
+      data.landing = el.rover.landing_date;
+      data.launch = el.rover.launch_date;
+      data.earth = el.earth_date;
+      data.status = el.rover.status;
+    });
+
+    return `
+      <div class="block">
+        <div><b>landing date: </b>${data.landing}</div>
+        <div><b>launch date: </b>${data.launch}</div>
+      </div>
+      <div class="block">
+        <div><b>earth-date: </b>${data.earth} </div>
+        <div><b>status: </b> ${data.status}</div>
+      </div>
+    `;
+  }
+};
+
 const roverImageEl = (el) => {
   return `
           <div class="image-element">
             <img src="${el.img_src}" width="100%" />
-            <p><b>landing date:</b> ${el.rover.landing_date}</p>
-            <p><b>launch date: </b>${el.rover.launch_date}</p>
-            <p><b>status:</b> ${el.rover.status}</p>
           </div>
   `;
 };
@@ -161,4 +175,5 @@ const roverImageEl = (el) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
   getImageOfTheDay(store);
+  render(app, store);
 });

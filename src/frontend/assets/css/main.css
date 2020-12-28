@@ -28,7 +28,6 @@ section {
 }
 button {
   cursor: pointer;
-  /* width: 100%; */
   padding: 10px 20px;
   background-color: rgb(255, 123, 0);
   color: white;
@@ -46,6 +45,22 @@ button {
   justify-content: center;
 }
 
+#board {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid white;
+  margin-bottom: 30px;
+}
+.block {
+  display: flex;
+  flex-flow: column wrap;
+}
+.block div {
+  margin: 10px;
+}
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 368px) {
   /* use mobile */
@@ -70,6 +85,6 @@ button {
     width: 700px;
   }
   #rover {
-    grid-template-columns: 33% 33% 33%;
+    grid-template-columns: 32% 32% 32%;
   }
 }
