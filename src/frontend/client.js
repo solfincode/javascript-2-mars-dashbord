@@ -36,8 +36,9 @@ const getRoverImage = (store, name) => {
 // dom elements
 const app = document.getElementById("app");
 
+//App is high order function, put function as arguments
 const render = async (app, state) => {
-  app.innerHTML = App(state);
+  app.innerHTML = App(state, Greeting, dashboard);
 };
 
 //rover eventlistener
@@ -73,7 +74,8 @@ const Greeting = (name) => {
 };
 
 // create content
-const App = (store) => {
+//App is high order function, put function as arguments
+const App = (store, Greeting, dashboard) => {
   let user = store.toJS();
   return `
         <main>
@@ -139,7 +141,7 @@ const dashboard = (store) => {
     return `
     <div><b>landing date: </b></div>
     <div><b>launch date: </b></div>
-    <div><b>earth-date: </b> </div>
+    <div><b>recent-date: </b> </div>
     <div><b>status: </b> </div>
     `;
   } else {
@@ -157,7 +159,7 @@ const dashboard = (store) => {
         <div><b>launch date: </b>${data.launch}</div>
       </div>
       <div class="block">
-        <div><b>earth-date: </b>${data.earth} </div>
+        <div><b>recent-date: </b>${data.earth} </div>
         <div><b>status: </b> ${data.status}</div>
       </div>
     `;
@@ -175,5 +177,4 @@ const roverImageEl = (el) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
   getImageOfTheDay(store);
-  render(app, store);
 });
