@@ -30,9 +30,9 @@ app.get("/apod", async (req, res) => {
 app.get("/rovers/:id", async (req, res) => {
   try {
     let name = req.params.id;
-    let data = await fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/photos?sol=1000&camera=NAVCAM&api_key=${process.env.API_KEY}`
-    ).then((res) => res.json());
+    // https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/photos?sol=1000&camera=NAVCAM&api_key=${process.env.API_KEY}
+    const url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/latest_photos?api_key=${process.env.API_KEY}`;
+    let data = await fetch(url).then((res) => res.json());
     res.send({ data });
   } catch (err) {
     console.log(err);

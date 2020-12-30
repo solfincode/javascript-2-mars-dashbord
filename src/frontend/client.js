@@ -92,26 +92,25 @@ const App = (store, Greeting, dashboard) => {
             but generally help with discoverability of relevant imagery.      
             </p>
         </section>  
-        <div id="apod">${ImageOfTheDay(store)}</div>
+        <div id="apod">${ImageOfTheDay(store, apodImageEl)}</div>
         <h2>Rover Images</h2>
         <div id="board">${dashboard(store)}</div>
         <div id="rover">${ImageOfRover(store)}</div>
     `;
 };
 
-//apod image component
-const ImageOfTheDay = (store) => {
+//apod image component - another high order function which takes func as arguments
+const ImageOfTheDay = (store, func) => {
   const apod = store.toJS().apod;
-  console.log(apod);
   if (apod.image.media_type === "video") {
     return `
-          <p>See today's featured video <a href="${apod.url}">here</a></p>
+          <p>See today's featured video <a href="${apod.image.url}">here</a></p>
           <p>${apod.image.title}</p>
           <p>${apod.image.explanation}</p>
       `;
   } else {
     return `
-    ${apodImageEl(apod)}
+    ${func(apod)}
       `;
   }
 };
@@ -125,7 +124,7 @@ const apodImageEl = (apod) => {
 
 //image of rover
 const ImageOfRover = (store) => {
-  const roverData = store.toJS().roverData.data.photos;
+  const roverData = store.toJS().roverData.data.latest_photos;
   if (roverData === undefined || roverData === "") {
     return ``;
   } else {
@@ -134,12 +133,11 @@ const ImageOfRover = (store) => {
 };
 
 const dashboard = (store) => {
-  const roverData = store.toJS().roverData.data.photos;
+  const roverData = store.toJS().roverData.data.latest_photos;
   if (roverData === undefined || roverData === "") {
     return `
     <div><b>landing date: </b></div>
     <div><b>launch date: </b></div>
-    <div><b>recent-date: </b> </div>
     <div><b>status: </b> </div>
     `;
   } else {
@@ -147,19 +145,13 @@ const dashboard = (store) => {
     roverData.map((el) => {
       data.landing = el.rover.landing_date;
       data.launch = el.rover.launch_date;
-      data.earth = el.earth_date;
       data.status = el.rover.status;
     });
 
     return `
-      <div class="block">
         <div><b>landing date: </b>${data.landing}</div>
         <div><b>launch date: </b>${data.launch}</div>
-      </div>
-      <div class="block">
-        <div><b>recent-date: </b>${data.earth} </div>
         <div><b>status: </b> ${data.status}</div>
-      </div>
     `;
   }
 };
@@ -168,6 +160,7 @@ const roverImageEl = (el) => {
   return `
           <div class="image-element">
             <img src="${el.img_src}" width="100%" />
+            <div><b>recent-date: </b>${el.earth_date} </div>
           </div>
   `;
 };
